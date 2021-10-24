@@ -42,7 +42,7 @@ func mkFileDir(){
 }
 
 func startTheServer(mux *http.ServeMux,doneChannel *chan bool){
-	err := http.ListenAndServe("." + strconv.Itoa(port),mux)
+	err := http.ListenAndServe(":" + strconv.Itoa(port),mux)
 	*doneChannel <- true
 	if err != nil{
 		internalLogs.Println("Could not start the server : ",err)
