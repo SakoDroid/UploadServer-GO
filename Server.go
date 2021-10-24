@@ -93,6 +93,7 @@ func upload(wr http.ResponseWriter,req *http.Request){
 				fs,err3 := os.OpenFile("./files/" + header.Filename,os.O_CREATE | os.O_RDWR,0666)
 				if err3 == nil{
 					_, err4 := io.Copy(fs,ft)
+					_ = fs.Close()
 					if err4 == nil {
 						htmlResponse += "<span>" + strconv.Itoa(i) + "-  </span><a href=\"/files/" + header.Filename + "\">" + header.Filename  +"</a><br/><hr/>"
 					}else{
@@ -107,6 +108,7 @@ func upload(wr http.ResponseWriter,req *http.Request){
 				sendError(&wr,500,"",req.RemoteAddr)
 				internalLogs.Println("Problem in fetching file : ",err2)
 			}
+			_ = ft.Close()
 		}
 		wr.Header().Set(textproto.CanonicalMIMEHeaderKey("content-type"),"text/html")
 		wr.WriteHeader(200)
@@ -157,6 +159,7 @@ func sendAFile(wr *http.ResponseWriter,path string,req * http.Request,httpServ b
 			(*wr).Header().Set(textproto.CanonicalMIMEHeaderKey("content-type"), contentTypes[getFileExt(path)])
 			(*wr).WriteHeader(200)
 			file, err2 := os.Open(path)
+			defer file.Close()
 			if err2 == nil {
 				_, err3 := io.Copy(*wr, file)
 				if err3 == nil {
